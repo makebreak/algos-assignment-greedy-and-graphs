@@ -72,32 +72,22 @@ public class PhysicsExperiment {
 		    		else if(signUpTable[x][next] == 1)
 		    			lastConseqNum = next; 
 		    		else lastConseqNum = next - 1;
-		    		//System.out.println("last step for student " + x + " from " + y + " is " + lastConseqNum);
-		    		//System.out.println("count is " + count);
 	    		} catch (ArrayIndexOutOfBoundsException e) {
 	        		System.out.println(" out of bounds");
 	        	}
 	    		
 	    		// store last point in array 
 	    		trackArray[x] = lastConseqNum;
-	    		//System.out.println("student " + x + " trackArray value is " + trackArray[x]);
 	    		
 	    		// check if any other student already reached this point
 	    		for(int i=0; i < x; i++) {
-	    			try {
-			    		if (trackArray[i] >= trackArray[x]) {
-			    			//System.out.println("another student already reached this point");
-			    			// set boolean to false 
-			    			longestSoFar = false;
-			    		}
-		    		} catch (ArrayIndexOutOfBoundsException e) {
-		    			System.out.println("error at index");
+		    		if (trackArray[i] >= trackArray[x]) {
+		    			// set boolean to false 
+		    			longestSoFar = false;
 		    		}
 	    		} // end for loop
 	    		//setting scheduleTable
-    			//System.out.println(longestSoFar);
     			if (longestSoFar == true) {
-		    		//System.out.println("student " + x + " reached " + lastConseqNum + " from " + y);
 		    		// keep track of this, perhaps through count array or hashmap
 		    		endpt=lastConseqNum;
 		    		student = x;
