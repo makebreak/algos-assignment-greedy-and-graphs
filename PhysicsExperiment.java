@@ -1,6 +1,6 @@
 /**
  * Physics Experiment
- * Author: Your Name and Carolyn Yao
+ * Author: Andy and Carolyn Yao
  * Does this compile or finish running within 5 seconds? Y/N
  */
 
