@@ -44,18 +44,19 @@ public class PhysicsExperiment {
 	int y = 1;
 	int lastConseqNum = y;
 	int trackArray[] = new int[numStudents+1];
-    while(y < numSteps) {
-    	// start at step 1, lookupTable[x][1] = 1 if student x can do step 1
+	while(y < numSteps) {
+	    // start at step 1, lookupTable[x][1] = 1 if student x can do step 1
 	    // check how far every student can go from this and each subsequent step    
-    	int endpt = y-1;
-    	int student = 0;
-    	lastConseqNum = y;
-    	boolean longestSoFar = false;
+	    int endpt = y-1;
+	    int student = 0;
+	    lastConseqNum = y;
+	    boolean longestSoFar = false;
 	    for (int x=1; x<=numStudents; x++) { 
 	    	// keep a counter to track for how long the student can volunteer
 	    	int count = 0;
     		int next = y;
-	    	// check if first student can do it and if they can do the next one, stop when next is not consecutive next
+	    	// check if first student can do it and if they can do the next one,
+		// stop when next is false or is out of bounds 
 	    	if(signUpTable[x][y] == 1) {
 	    		longestSoFar = true;
 	    		try {
@@ -64,7 +65,6 @@ public class PhysicsExperiment {
 		    			if (next >= numSteps) {
 		    				break;
 		    			}
-		    			//System.out.println("next step for student " + x + " is " + next);
 		    		}	    
 		    		// set last number in sequence
 		    		if (count == 0)
@@ -86,32 +86,30 @@ public class PhysicsExperiment {
 		    			longestSoFar = false;
 		    		}
 	    		} // end for loop
+			
 	    		//setting scheduleTable
     			if (longestSoFar == true) {
-		    		// keep track of this, perhaps through count array or hashmap
 		    		endpt=lastConseqNum;
 		    		student = x;
     			}	    				
-	    	} // end if with current y as true 
+	    	} 
 	    	else continue;
 	    }	// end for loop iterating through students for current y step
 	    
-		// take longest count and 
-		// schedule student for steps y through last pt in longest sequence
+	    // take longest count using endpt variable and 
+	    // schedule student for steps y through last pt in longest sequence
 	    if (endpt >= y) {
-			for (int j = y; j<= endpt; j++) {
-				scheduleTable[student][j] = 1;
-			}	    	
+		for (int j = y; j<= endpt; j++) {
+		    scheduleTable[student][j] = 1;
+		}	    	
 	    }
 		
-		// set next y now that we've reached longest sequence
-		// set next y 
-		if (endpt < numSteps)
-			y = endpt+1; 
-		else if (endpt == numSteps)
-			y = endpt; 
-
-    } // end while 
+	    // set next y now that we've reached longest sequence
+	    if (endpt < numSteps)
+		y = endpt+1; 
+	    else if (endpt == numSteps)
+		y = endpt; 
+	} // end while 
 
     return scheduleTable;
   }
