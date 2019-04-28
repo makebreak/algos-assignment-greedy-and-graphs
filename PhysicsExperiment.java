@@ -44,7 +44,7 @@ public class PhysicsExperiment {
 	int y = 1;
 	int lastConseqNum = y;
 	int trackArray[] = new int[numStudents+1];
-	while(y < numSteps) {
+	while(y <= numSteps) {
 	    // start at step 1, lookupTable[x][1] = 1 if student x can do step 1
 	    // check how far every student can go from this and each subsequent step    
 	    int endpt = y-1;
@@ -105,10 +105,7 @@ public class PhysicsExperiment {
 	    }
 		
 	    // set next y now that we've reached longest sequence
-	    if (endpt < numSteps)
-		y = endpt+1; 
-	    else if (endpt == numSteps)
-		y = endpt; 
+	    y = endpt+1; 
 	} // end while 
 
     return scheduleTable;
