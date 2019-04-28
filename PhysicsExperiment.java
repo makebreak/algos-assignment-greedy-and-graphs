@@ -11,7 +11,7 @@
  * solution.
  *
  * You will only be graded on code you add to the scheduleExperiments method.
- * Do not mess with the existing formatting and identation.
+ * Do not mess with the existing formatting and indentation.
  * You don't need to use the helper methods, but if they come in handy setting
  * up a custom test case, feel free to use them.
  */
@@ -36,8 +36,92 @@ public class PhysicsExperiment {
     // Your scheduleTable is initialized as all 0's so far. Your code will put 1's
     // in the table in the right places based on the return description
     int[][] scheduleTable = new int[numStudents + 1][numSteps + 1];
+    
+    // starting point is step y
+    // check if any student can go further from same starting point
+    // keep student who can go farthest - greedy choice
+    // start next at end point of chosen sequence
+	int y = 1;
+	int lastConseqNum = y;
+	int trackArray[] = new int[numStudents+1];
+    while(y < numSteps) {
+    	// start at step 1, lookupTable[x][1] = 1 if student x can do step 1
+	    // check how far every student can go from this and each subsequent step    
+    	int endpt = y-1;
+    	int student = 0;
+    	lastConseqNum = y;
+    	boolean longestSoFar = false;
+	    for (int x=1; x<=numStudents; x++) { 
+	    	// keep a counter to track for how long the student can volunteer
+	    	int count = 0;
+    		int next = y;
+	    	// check if first student can do it and if they can do the next one, stop when next is not consecutive next
+	    	if(signUpTable[x][y] == 1) {
+	    		longestSoFar = true;
+	    		try {
+		    		while (signUpTable[x][++next] == 1) {
+		    			count++;
+		    			if (next >= numSteps) {
+		    				break;
+		    			}
+		    			//System.out.println("next step for student " + x + " is " + next);
+		    		}	    
+		    		// set last number in sequence
+		    		if (count == 0)
+		    			lastConseqNum = y;	// no subsequent step after y 
+		    		else if(signUpTable[x][next] == 1)
+		    			lastConseqNum = next; 
+		    		else lastConseqNum = next - 1;
+		    		//System.out.println("last step for student " + x + " from " + y + " is " + lastConseqNum);
+		    		//System.out.println("count is " + count);
+	    		} catch (ArrayIndexOutOfBoundsException e) {
+	        		System.out.println(" out of bounds");
+	        	}
+	    		
+	    		// store last point in array 
+	    		trackArray[x] = lastConseqNum;
+	    		//System.out.println("student " + x + " trackArray value is " + trackArray[x]);
+	    		
+	    		// check if any other student already reached this point
+	    		for(int i=0; i < x; i++) {
+	    			try {
+			    		if (trackArray[i] >= trackArray[x]) {
+			    			//System.out.println("another student already reached this point");
+			    			// set boolean to false 
+			    			longestSoFar = false;
+			    		}
+		    		} catch (ArrayIndexOutOfBoundsException e) {
+		    			System.out.println("error at index");
+		    		}
+	    		} // end for loop
+	    		//setting scheduleTable
+    			//System.out.println(longestSoFar);
+    			if (longestSoFar == true) {
+		    		//System.out.println("student " + x + " reached " + lastConseqNum + " from " + y);
+		    		// keep track of this, perhaps through count array or hashmap
+		    		endpt=lastConseqNum;
+		    		student = x;
+    			}	    				
+	    	} // end if with current y as true 
+	    	else continue;
+	    }	// end for loop iterating through students for current y step
+	    
+		// take longest count and 
+		// schedule student for steps y through last pt in longest sequence
+	    if (endpt >= y) {
+			for (int j = y; j<= endpt; j++) {
+				scheduleTable[student][j] = 1;
+			}	    	
+	    }
+		
+		// set next y now that we've reached longest sequence
+		// set next y 
+		if (endpt < numSteps)
+			y = endpt+1; 
+		else if (endpt == numSteps)
+			y = endpt; 
 
-    // Your code goes here
+    } // end while 
 
     return scheduleTable;
   }
