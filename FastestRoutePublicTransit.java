@@ -32,9 +32,59 @@ public class FastestRoutePublicTransit {
     int[][] first,
     int[][] freq
   ) {
-    // Your code along with comments here. Feel free to borrow code from any
-    // of the existing method. You can also make new helper methods.
-    return 0;
+	  int numVertices = lengths[0].length;
+	  
+	  Boolean visited [] = new Boolean[numVertices]; // boolean array the size of # of vertices
+	  
+	  // Initialize all visited[] as false
+	  for (int v = 0; v < numVertices; v++) {
+	    visited[v] = false;
+	  }
+	  
+	  int currentTime = startTime; // time from 5:30AM until reaching the destination station
+	  
+	  int u = S;  // u is currentStation, initially S, starting point
+	  
+	  // closest next station, in terms of time
+	  int minTime = Integer.MAX_VALUE;
+	  int nextStation = u;
+	  int thisTripEndsAt = startTime; // trip time from current point
+		  
+	  // take shortest edge to another vertex until you get to T
+	  while (u != T && visited[u] != true) {
+	      // Mark u as visited.
+		  visited[u] = true;
+		  minTime = Integer.MAX_VALUE; // reset minTime
+		  
+		  // Where do you go from u?
+		  // First figure out where you CAN go
+		  for (int i=0; i<numVertices; i++) {
+			  if (lengths[u][i] != 0 && visited[i] != true) { // for all stations i that are reachable from u
+				  
+				  // find next train from u to i and calculate time it would take to get there
+				  int nextTrain = first[u][i];
+				  
+				  while (nextTrain < currentTime) // find a train that leaves at or after current time
+					  nextTrain += freq[u][i]; // nextTrain = time of the next train from u to i
+				  
+				  // add length of trip
+				  thisTripEndsAt = nextTrain + lengths[u][i];
+				  
+				  // update the min for the for loop
+				  if (thisTripEndsAt < minTime) {
+					  minTime = thisTripEndsAt;
+					  nextStation = i;
+					  //System.out.println("current i is: " + i);
+				  }
+			  }
+		  }
+		  // Take the shortest trip to the next station and update the train variables
+		  System.out.println("Current Station is: " + u);
+		  u = nextStation;
+		  currentTime = minTime;
+		  System.out.println("Next station is: " + u + " and current time is " + currentTime);				  
+	  }
+	  return currentTime;
   }
 
   /**
@@ -111,19 +161,56 @@ public class FastestRoutePublicTransit {
   public static void main (String[] args) {
     /* length(e) */
     int lengthTimeGraph[][] = new int[][]{
-      {0, 4, 0, 0, 0, 0, 0, 8, 0},
+      {0, 4, 0, 0, 0, 0, 0, 8, 0},	// [0][1] and [0][7]
       {4, 0, 8, 0, 0, 0, 0, 11, 0},
       {0, 8, 0, 7, 0, 4, 0, 0, 2},
       {0, 0, 7, 0, 9, 14, 0, 0, 0},
       {0, 0, 0, 9, 0, 10, 0, 0, 0},
       {0, 0, 4, 14, 10, 0, 2, 0, 0},
       {0, 0, 0, 0, 0, 2, 0, 1, 6},
-      {8, 11, 0, 0, 0, 0, 1, 0, 7},
-      {0, 0, 2, 0, 0, 0, 6, 7, 0}
+      {8, 11, 0, 0, 0, 0, 1, 0, 7}, 
+      {0, 0, 2, 0, 0, 0, 6, 7, 0} // [8][2]
     };
     FastestRoutePublicTransit t = new FastestRoutePublicTransit();
     t.shortestTime(lengthTimeGraph, 0);
-
-    // You can create a test case for your implemented method for extra credit below
-  }
+    
+    System.out.println();
+    // set myShortestTravelTime parameters 
+    int s = 0;
+    int d = 8;
+    int startTime = 0;	// number of minutes from 5:30 AM
+    
+    System.out.println("myShortestTravelTime from " + s + " to " + d);
+    
+    // first [u][v] - The time of the first train that stops at u on its way to v, int in minutes from 5:30am
+	// change 0s to -1 or null 
+    int first[][] = new int[][] {
+      {-1, 4, -1, -1, -1, -1, -1, 8, -1},
+      {4, -1, 8, -1, -1, -1, -1, 11, -1},
+      {-1, 8, -1, 7, -1, 4, -1, -1, 2},
+      {-1, -1, 7, -1, 9, 14, -1, -1, -1},
+      {-1, -1, -1, 9, -1, 10, -1, -1, -1},
+      {-1, -1, 4, 14, 10, -1, 2, -1, -1},
+      {-1, -1, -1, -1, -1, 2, -1, 1, 6},
+      {8, 11, -1, -1, -1, -1, 1, -1, 7},
+      {-1, -1, 2, -1, -1, -1, 6, 7, -1}
+    };
+    
+    // freq freq[u][v] How frequently is the train that stops at u on its way to v 
+    // change 0s to -1 or null 
+    int freq[][] = new int[][] {
+        {-1, 4, -1, -1, -1, -1, -1, 8, -1},
+        {4, -1, 8, -1, -1, -1, -1, 11, -1},
+        {-1, 8, -1, 7, -1, 4, -1, -1, 2},
+        {-1, -1, 7, -1, 9, 14, -1, -1, -1},
+        {-1, -1, -1, 9, -1, 10, -1, -1, -1},
+        {-1, -1, 4, 14, 10, -1, 2, -1, -1},
+        {-1, -1, -1, -1, -1, 2, -1, 1, 6},
+        {8, 11, -1, -1, -1, -1, 1, -1, 7},
+        {-1, -1, 2, -1, -1, -1, 6, 7, -1}
+      };
+      // You can create a test case for your implemented method for extra credit below
+      int myTime = t.myShortestTravelTime(s, d, startTime, lengthTimeGraph, first, freq);
+      System.out.println("Time: " + myTime);
+  } // end main 
 }
