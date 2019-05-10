@@ -1,6 +1,6 @@
 /**
  * Physics Experiment
- * Author: Andy and Carolyn Yao
+ * Author: Your Name and Carolyn Yao
  * Does this compile or finish running within 5 seconds? Y/N
  */
 
@@ -37,76 +37,87 @@ public class PhysicsExperiment {
     // in the table in the right places based on the return description
     int[][] scheduleTable = new int[numStudents + 1][numSteps + 1];
     
-    // starting point is step y
-    // check if any student can go further from same starting point
+    // starting point is currentStep = 1
+    // check how far each student can go from a given point
     // keep student who can go farthest - greedy choice
     // start next at end point of chosen sequence
-	int y = 1;
-	int lastConseqNum = y;
+	int currentStep = 1;
+	int lastConsecNum = currentStep;	
 	int trackArray[] = new int[numStudents+1];
-	while(y <= numSteps) {
-	    // start at step 1, lookupTable[x][1] = 1 if student x can do step 1
+    while(currentStep < numSteps) {
+    	// start at step 1, lookupTable[x][1] = 1 if student x can do step 1
 	    // check how far every student can go from this and each subsequent step    
-	    int endpt = y-1;
-	    int student = 0;
-	    lastConseqNum = y;
-	    boolean longestSoFar = false;
-	    for (int x=1; x<=numStudents; x++) { 
-	    	// keep a counter to track for how long the student can volunteer
-	    	int count = 0;
-    		int next = y;
-	    	// check if first student can do it and if they can do the next one,
-		// stop when next is false or is out of bounds 
-	    	if(signUpTable[x][y] == 1) {
+    	int endpt = currentStep-1; // making endpt before current starting point will force us to change endpt later
+    	int student = 0;
+    	boolean longestSoFar = false;
+    	
+	    for (int x=1; x<=numStudents; x++) { // for every student x
+	    	int count = 0; // keep a counter to track for how many consecutive steps the student can volunteer
+    		int next = currentStep; 
+	    	// check if first student can do it and if they can do the next one
+	    	if(signUpTable[x][currentStep] == 1) {
 	    		longestSoFar = true;
 	    		try {
-		    		while (signUpTable[x][++next] == 1) {
+		    		while (signUpTable[x][++next] == 1) { //stop when next is not consecutive 
 		    			count++;
 		    			if (next >= numSteps) {
 		    				break;
 		    			}
+		    			//System.out.println("next step for student " + x + " is " + next);
 		    		}	    
 		    		// set last number in sequence
 		    		if (count == 0)
-		    			lastConseqNum = y;	// no subsequent step after y 
+		    			lastConsecNum = currentStep;	// no subsequent step after currentStep 
 		    		else if(signUpTable[x][next] == 1)
-		    			lastConseqNum = next; 
-		    		else lastConseqNum = next - 1;
+		    			lastConsecNum = next; 
+		    		else lastConsecNum = next - 1;
+		    		//System.out.println("last step for student " + x + " from " + y + " is " + lastConseqNum);
+		    		//System.out.println("count is " + count);
 	    		} catch (ArrayIndexOutOfBoundsException e) {
 	        		System.out.println(" out of bounds");
 	        	}
 	    		
-	    		// store last point in array 
-	    		trackArray[x] = lastConseqNum;
+	    		// store last point in sequence for student x
+	    		trackArray[x] = lastConsecNum;
 	    		
 	    		// check if any other student already reached this point
 	    		for(int i=0; i < x; i++) {
-		    		if (trackArray[i] >= trackArray[x]) {
-		    			// set boolean to false 
-		    			longestSoFar = false;
+	    			try {
+			    		if (trackArray[i] >= trackArray[x]) { // another student already reached this point
+			    			longestSoFar = false;	// this is not the longest sequence we have seen
+			    		}
+		    		} catch (ArrayIndexOutOfBoundsException e) {
+		    			System.out.println("error at index");
 		    		}
 	    		} // end for loop
-			
 	    		//setting scheduleTable
+    			//System.out.println(longestSoFar);
     			if (longestSoFar == true) {
-		    		endpt=lastConseqNum;
+		    		//System.out.println("student " + x + " reached " + lastConseqNum + " from " + currentStep);
+		    		// keep track of this, perhaps through count array or hashmap
+		    		endpt=lastConsecNum;
 		    		student = x;
     			}	    				
-	    	} 
+	    	} // end if with current currentStep as true 
 	    	else continue;
-	    }	// end for loop iterating through students for current y step
+	    }	// end for loop iterating through students for current currentStep step
 	    
-	    // take longest count using endpt variable and 
-	    // schedule student for steps y through last pt in longest sequence
-	    if (endpt >= y) {
-		for (int j = y; j<= endpt; j++) {
-		    scheduleTable[student][j] = 1;
-		}	    	
+		// take longest count and 
+		// schedule student for steps currentStep through last pt in longest sequence
+	    if (endpt >= currentStep) {
+			for (int j = currentStep; j<= endpt; j++) {
+				scheduleTable[student][j] = 1;
+			}	    	
 	    }
 		
-	    // set next y now that we've reached longest sequence
-	    y = endpt+1; 
-	} // end while 
+		// set next currentStep now that we've reached longest sequence
+		// set next currentStep 
+		if (endpt < numSteps)
+			currentStep = endpt+1; 
+		else if (endpt == numSteps)
+			currentStep = endpt; 
+
+    } // end while 
 
     return scheduleTable;
   }
