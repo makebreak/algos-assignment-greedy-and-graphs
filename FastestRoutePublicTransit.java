@@ -45,32 +45,35 @@ public class FastestRoutePublicTransit {
 	  
 	  int u = S;  // u is currentStation, initially S, starting point
 	  
-	  // closest next station, in terms of time
-	  int minTime = Integer.MAX_VALUE;
-	  int nextStation = u;
+	  // initialize variables to use in for loop below 
+	  int minTime = Integer.MAX_VALUE; // shortest time to next station
+	  int nextStation = u;	// station corresponding to minTime
 	  int thisTripEndsAt = startTime; // trip time from current point
 		  
-	  // take shortest edge to another vertex until you get to T
+	  // take shortest edge to another unvisited vertex until you get to T
 	  while (u != T && visited[u] != true) {
 	      // Mark u as visited.
 		  visited[u] = true;
 		  minTime = Integer.MAX_VALUE; // reset minTime
 		  
-		  // Where do you go from u?
-		  // First figure out where you CAN go
+		  // to search for shortest trip to next station
+		  // we take the best answer so far (we need the one that remains after the for loop)
 		  for (int i=0; i<numVertices; i++) {
+			  // Where do you go from u?
+			  // First figure out where you CAN go
 			  if (lengths[u][i] != 0 && visited[i] != true) { // for all stations i that are reachable from u
 				  
 				  // find next train from u to i and calculate time it would take to get there
-				  int nextTrain = first[u][i];
+				  int nextTrain = first[u][i]; // take the first train from u to i
 				  
-				  while (nextTrain < currentTime) // find a train that leaves at or after current time
+				  while (nextTrain < currentTime) // find a train time to leave at or after current time
 					  nextTrain += freq[u][i]; // nextTrain = time of the next train from u to i
 				  
 				  // add length of trip
 				  thisTripEndsAt = nextTrain + lengths[u][i];
 				  
-				  // update the min for the for loop
+				  // update the min for the for loop, 
+				  // if this trip is shorter than previous ones for this u and i
 				  if (thisTripEndsAt < minTime) {
 					  minTime = thisTripEndsAt;
 					  nextStation = i;
@@ -182,7 +185,7 @@ public class FastestRoutePublicTransit {
     
     System.out.println("myShortestTravelTime from " + s + " to " + d);
     
-    // first [u][v] - The time of the first train that stops at u on its way to v, int in minutes from 5:30am
+    // first [u][v] - The time of the first train from u to v, int in minutes from 5:30am
 	// change 0s to -1 or null 
     int first[][] = new int[][] {
       {-1, 4, -1, -1, -1, -1, -1, 8, -1},
@@ -196,7 +199,7 @@ public class FastestRoutePublicTransit {
       {-1, -1, 2, -1, -1, -1, 6, 7, -1}
     };
     
-    // freq freq[u][v] How frequently is the train that stops at u on its way to v 
+    // freq freq[u][v] How frequently does train from u go to v 
     // change 0s to -1 or null 
     int freq[][] = new int[][] {
         {-1, 4, -1, -1, -1, -1, -1, 8, -1},
